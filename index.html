@@ -1,14 +1,214 @@
-<!DOCTYPE html>
-<html lang="pt-br">
+<!doctype html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
-  <title>js illustration</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#11131a" />
+  <meta name="description" content="A lightweight generative illustration studio made with JavaScript and Canvas." />
+  <title>JS Illustration — Generative Illustration Studio</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <canvas></canvas>
-  <script src="script.js"></script>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand-wrap">
+        <div class="brand-mark" aria-hidden="true">✦</div>
+        <div>
+          <h1>JS Illustration</h1>
+          <p>Generative illustration studio</p>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <button class="ghost-btn" id="collectionBtn" type="button">Collection</button>
+        <a class="ghost-btn link-btn" href="https://github.com/GustavoVitorS/js-illustration" target="_blank" rel="noreferrer">GitHub ↗</a>
+        <button class="icon-btn" id="helpBtn" type="button" aria-label="Help">?</button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <aside class="control-panel" id="controlPanel" aria-label="Illustration controls">
+        <div class="panel-heading">
+          <div>
+            <span class="eyebrow">Create</span>
+            <h2>Shape the artwork</h2>
+          </div>
+          <button class="icon-btn mobile-only" id="closeControlsBtn" type="button" aria-label="Close controls">×</button>
+        </div>
+
+        <section class="control-section hero-controls">
+          <label class="field-label" for="styleSelect">Illustration style</label>
+          <select id="styleSelect" class="select-control">
+            <option value="flow-garden">Flow Garden</option>
+            <option value="paper-cut">Paper Cut</option>
+            <option value="topographic">Topographic</option>
+            <option value="geo-collage">Geo Collage</option>
+            <option value="botanical">Botanical</option>
+            <option value="orbit-field">Orbit Field</option>
+          </select>
+
+          <label class="field-label" for="paletteSelect">Color palette</label>
+          <select id="paletteSelect" class="select-control"></select>
+
+          <div class="seed-row">
+            <div class="seed-field">
+              <label class="field-label" for="seedInput">Seed</label>
+              <input id="seedInput" class="text-control" maxlength="24" spellcheck="false" autocomplete="off" />
+            </div>
+            <button class="small-btn" id="randomSeedBtn" type="button">Random</button>
+          </div>
+        </section>
+
+        <section class="control-section">
+          <div class="section-title-row">
+            <h3>Composition</h3>
+            <button class="text-btn" id="resetBtn" type="button">Reset</button>
+          </div>
+
+          <div class="range-control">
+            <div class="range-meta"><label for="complexityRange">Complexity</label><output id="complexityValue"></output></div>
+            <input id="complexityRange" type="range" min="10" max="100" value="56" />
+          </div>
+
+          <div class="range-control">
+            <div class="range-meta"><label for="densityRange">Density</label><output id="densityValue"></output></div>
+            <input id="densityRange" type="range" min="10" max="100" value="54" />
+          </div>
+
+          <div class="range-control">
+            <div class="range-meta"><label for="motionRange">Flow / motion</label><output id="motionValue"></output></div>
+            <input id="motionRange" type="range" min="0" max="100" value="58" />
+          </div>
+
+          <div class="range-control">
+            <div class="range-meta"><label for="balanceRange">Balance</label><output id="balanceValue"></output></div>
+            <input id="balanceRange" type="range" min="0" max="100" value="45" />
+          </div>
+        </section>
+
+        <section class="control-section">
+          <h3>Appearance</h3>
+
+          <div class="range-control">
+            <div class="range-meta"><label for="strokeRange">Stroke weight</label><output id="strokeValue"></output></div>
+            <input id="strokeRange" type="range" min="50" max="180" value="100" />
+          </div>
+
+          <div class="range-control">
+            <div class="range-meta"><label for="detailRange">Detail</label><output id="detailValue"></output></div>
+            <input id="detailRange" type="range" min="0" max="100" value="55" />
+          </div>
+
+          <div class="toggle-row">
+            <div>
+              <strong>Mirror</strong>
+              <span>Reflect selected structures</span>
+            </div>
+            <label class="switch"><input id="mirrorToggle" type="checkbox" /><span></span></label>
+          </div>
+        </section>
+
+        <section class="control-section">
+          <h3>Canvas</h3>
+          <div class="two-col">
+            <div>
+              <label class="field-label" for="ratioSelect">Format</label>
+              <select id="ratioSelect" class="select-control">
+                <option value="4:3">4:3</option>
+                <option value="1:1">1:1</option>
+                <option value="16:9">16:9</option>
+                <option value="4:5">4:5</option>
+              </select>
+            </div>
+            <div>
+              <label class="field-label" for="qualitySelect">Quality</label>
+              <select id="qualitySelect" class="select-control">
+                <option value="eco">Eco</option>
+                <option value="balanced" selected>Balanced</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+          </div>
+        </section>
+      </aside>
+
+      <section class="stage-column">
+        <div class="stage-toolbar">
+          <div class="status-chip"><span class="status-dot"></span><span id="statusText">Ready</span></div>
+          <div class="toolbar-actions">
+            <button class="ghost-btn desktop-control-btn" id="openControlsBtn" type="button">Controls</button>
+            <button class="icon-btn" id="fullscreenBtn" type="button" aria-label="Fullscreen">⛶</button>
+          </div>
+        </div>
+
+        <div class="artboard-shell" id="artboardShell">
+          <div class="artboard" id="artboard">
+            <canvas id="artCanvas" aria-label="Generated illustration"></canvas>
+            <div class="art-caption">
+              <div>
+                <span class="caption-kicker">Generated in your browser</span>
+                <strong id="artTitle">Untitled Form</strong>
+              </div>
+              <span id="artMeta">Seed —</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-dock">
+          <button class="primary-btn" id="generateBtn" type="button">✦ Generate</button>
+          <button class="dock-btn" id="surpriseBtn" type="button">Surprise me</button>
+          <button class="dock-btn" id="saveBtn" type="button">♡ Save</button>
+          <button class="dock-btn" id="exportBtn" type="button">↓ Export</button>
+          <button class="dock-btn mobile-controls" id="mobileControlsBtn" type="button" aria-expanded="false" aria-controls="controlPanel">☰ Controls</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="backdrop" id="backdrop" hidden></div>
+
+  <dialog class="modal" id="exportModal">
+    <form method="dialog" class="modal-card" id="exportForm">
+      <div class="modal-head">
+        <div><span class="eyebrow">Export</span><h2>Save your illustration</h2></div>
+        <button class="icon-btn" value="cancel" aria-label="Close">×</button>
+      </div>
+      <div class="export-grid">
+        <label>Format<select id="exportFormat" class="select-control"><option value="png">PNG</option><option value="jpg">JPG</option><option value="svg">SVG</option><option value="pdf">PDF</option></select></label>
+        <label>Size<select id="exportSize" class="select-control"><option value="1600">1600 px</option><option value="2400">2400 px</option><option value="3200">3200 px</option><option value="4000">4000 px</option></select></label>
+      </div>
+      <p class="modal-note">PNG/JPG/PDF render offscreen, so the visible canvas stays lightweight. SVG stays vector-based.</p>
+      <div class="modal-actions"><button class="ghost-btn" value="cancel">Cancel</button><button class="primary-btn" id="confirmExportBtn" value="default" type="button">Export file</button></div>
+    </form>
+  </dialog>
+
+  <dialog class="modal" id="collectionModal">
+    <div class="modal-card collection-card">
+      <div class="modal-head">
+        <div><span class="eyebrow">Collection</span><h2>Saved artworks</h2></div>
+        <button class="icon-btn" id="closeCollectionBtn" type="button" aria-label="Close">×</button>
+      </div>
+      <div id="collectionList" class="collection-list"></div>
+    </div>
+  </dialog>
+
+  <dialog class="modal" id="helpModal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div><span class="eyebrow">About</span><h2>How it works</h2></div>
+        <button class="icon-btn" id="closeHelpBtn" type="button" aria-label="Close">×</button>
+      </div>
+      <p class="help-copy">Every artwork is built from deterministic vector-like primitives generated locally with JavaScript. No image assets, AI model, API or backend are required.</p>
+      <div class="shortcut-list"><span><kbd>G</kbd> Generate</span><span><kbd>S</kbd> Surprise</span><span><kbd>E</kbd> Export</span><span><kbd>F</kbd> Fullscreen</span></div>
+    </div>
+  </dialog>
+
+  <script defer src="random.js"></script>
+  <script defer src="presets.js"></script>
+  <script defer src="engine.js"></script>
+  <script defer src="renderer.js"></script>
+  <script defer src="exporter.js"></script>
+  <script defer src="app.js"></script>
 </body>
 </html>

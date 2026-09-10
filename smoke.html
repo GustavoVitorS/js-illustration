@@ -1,0 +1,11 @@
+<!doctype html><meta charset="utf-8"><title>Smoke test</title><pre id="out"></pre>
+<script src="random.js"></script><script src="presets.js"></script><script src="engine.js"></script><script src="renderer.js"></script>
+<script>
+const out=document.getElementById('out');
+const s=Object.assign({},JSI.presets.DEFAULTS,{style:'flow-garden',quality:'eco'});
+const a=JSI.engine.generate('TEST1234',s),b=JSI.engine.generate('TEST1234',s);
+const same=JSON.stringify(a.primitives)===JSON.stringify(b.primitives);
+const svg=JSI.renderer.toSVG(a,1000);
+out.textContent=`deterministic=${same}\nprimitives=${a.primitives.length}\nsvgVector=${svg.includes('<path')&&!svg.includes('<image')}`;
+if(!same||!svg.includes('<svg')||svg.includes('<image'))throw new Error('Smoke test failed');
+</script>
